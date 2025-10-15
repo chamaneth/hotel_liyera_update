@@ -1,103 +1,197 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
+import NavBar from "@/components/NavBar";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [navScrolled, setNavScrolled] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    const handleScroll = () => {
+      setNavScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const accommodation = [
+    { img: "/assets/standard.jpg", label: "SUITES" },
+    { img: "/assets/pool.avif", label: "POOLS" },
+    { img: "/assets/dining.jpg", label: "GOURMET DINING" },
+    { img: "/assets/spa.webp", label: "SPA" },
+  ];
+
+  const testimonials = [
+    {
+      name: "Sarah & David, UK",
+      text: "Our stay at Hotel Liyera was magical. The infinity pool, lush greenery, and authentic Sri Lankan dinner were unforgettable.",
+    },
+    {
+      name: "Mark, Singapore",
+      text: "Serene environment, modern amenities, and high ceilings made working and relaxing perfect.",
+    },
+    {
+      name: "Jessica & Tom, USA",
+      text: "Spacious rooms, breathtaking balcony views, and luxury five-star service.",
+    },
+    {
+      name: "Anil, India",
+      text: "Quiet rooms, fast Wi-Fi, and comfortable workspace. Perfect for business and relaxation.",
+    },
+  ];
+
+  return (
+    <main className="font-sans antialiased">
+          {/* ===== NAVBAR ===== */}
+          <NavBar/>
+
+      {/* Hero Section */}
+<section className="relative h-screen w-full">
+  <Image
+    src="/assets/ihgor-member-rate-web-offers-1440x720.avif"
+    alt="Hotel Hero"
+    fill
+    className="object-cover"
+    unoptimized
+    priority
+  />
+
+  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-center px-4">
+    <motion.h1
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+      className="text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg"
+    >
+      HOTEL LIYERA
+    </motion.h1>
+    <motion.p
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.2, delay: 0.2 }}
+      className="text-md md:text-lg lg:text-xl text-white max-w-3xl drop-shadow-md"
+    >
+      Discover Hotel Liyera in the heart of Sri Lanka, where modern luxury
+      meets the island's rich heritage.
+    </motion.p>
+  </div>
+</section>
+
+      {/* Accommodation Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-4xl font-bold mb-6"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Accommodation
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="mb-16 text-gray-700"
           >
-            Read our docs
-          </a>
+            Our hotel rooms are spacious, with higher ceilings than average hotels.
+            Rooms with balconies are perfect for couples or small families.
+          </motion.p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {accommodation.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: idx * 0.2 }}
+                className="relative h-72 rounded-xl overflow-hidden shadow-lg group cursor-pointer transform transition duration-500 hover:scale-105"
+              >
+                <Image
+                  src={item.img}
+                  alt={item.label}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition duration-500"></div>
+                <h3 className="absolute bottom-4 left-4 text-white text-xl md:text-2xl font-bold drop-shadow-lg bg-black/30 px-3 py-1 rounded">
+                  {item.label}
+                </h3>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-16 max-w-6xl mx-auto px-4 text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-4xl font-bold mb-12"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+          What Our Guests Say
+        </motion.h2>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {testimonials.map((t, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: idx * 0.2 }}
+              className="p-6 border rounded-lg shadow hover:shadow-xl transition bg-white"
+            >
+              <h3 className="font-bold text-xl mb-2">{t.name}</h3>
+              <p className="text-gray-600">{t.text}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 mt-12">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8">
+          <div>
+            <h4 className="font-bold mb-4">Contact Information</h4>
+            <p>123/6<br />Kottawa<br />Pannipitiya</p>
+            <p>0112675432</p>
+            <p><a href="mailto:info@hotelliyera.com" className="text-yellow-400 hover:underline">info@hotelliyera.com</a></p>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4">Useful Links</h4>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:underline">Our Rooms</a></li>
+              <li><a href="#" className="hover:underline">Explore</a></li>
+              <li><a href="#" className="hover:underline">Dining</a></li>
+              <li><a href="#" className="hover:underline">Sustainability</a></li>
+              <li><a href="#" className="hover:underline">Gallery</a></li>
+              <li><a href="#" className="hover:underline">Privacy Policy</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold mb-4">About</h4>
+            <p>
+              Discover Hotel Liyera in the heart of Sri Lanka, blending modern luxury with local charm.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <Image
+              src="/assets/image-removebg-preview.png"
+              alt="Liyera Logo"
+              width={120}
+              height={60}
+            />
+          </div>
+        </div>
       </footer>
-    </div>
+    </main>
   );
 }
