@@ -3,6 +3,7 @@
 This is the updated version of the Hotel Liyera project.  
 
 Originally built over a year ago using **HTML, CSS, and JavaScript**, the project has now been re-developed with modern technologies including:
+Link: https://github.com/chamaneth/Hotel_Liyera
 
 - **Next.js** for the frontend and server-side rendering  
 - **Flask** for backend APIs  
