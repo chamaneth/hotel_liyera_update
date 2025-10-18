@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link"; 
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
@@ -39,39 +40,39 @@ export default function Navbar() {
           }`}
         >
           <li>
-            <a href="/" className="hover:text-yellow-400 text-sm transition">
+            <Link href="/" className="hover:text-yellow-400 text-sm transition">
               HOME
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/rooms" className="hover:text-yellow-400 text-sm transition">
+            <Link href="/rooms" className="hover:text-yellow-400 text-sm transition">
               ROOMS
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/wedding" className="hover:text-yellow-400 text-sm transition">
+            <Link href="/wedding" className="hover:text-yellow-400 text-sm transition">
               EVENTS & WEDDINGS
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#testimonials" className="hover:text-yellow-400 text-sm transition">
+            <Link href="#testimonials" className="hover:text-yellow-400 text-sm transition">
               REVIEWS
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/contact" className="hover:text-yellow-400 text-sm transition">
+            <Link href="/contact" className="hover:text-yellow-400 text-sm transition">
               CONTACT US
-            </a>
+            </Link>
           </li>
         </ul>
 
         {/* Button */}
-        <a
+        <Link
           href="/reservation"
           className="px-4 py-2 rounded-md text-sm font-semibold bg-yellow-400 text-black hover:bg-yellow-500 transition"
         >
           RESERVE NOW
-        </a>
+        </Link>
       </nav>
     </header>
   );

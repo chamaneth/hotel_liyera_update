@@ -68,14 +68,15 @@ export default function Home() {
       HOTEL LIYERA
     </motion.h1>
     <motion.p
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.2, delay: 0.2 }}
-      className="text-md md:text-lg lg:text-xl text-white max-w-3xl drop-shadow-md"
-    >
-      Discover Hotel Liyera in the heart of Sri Lanka, where modern luxury
-      meets the island's rich heritage.
-    </motion.p>
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 1.2, delay: 0.2 }}
+  className="text-md md:text-lg lg:text-xl text-white max-w-3xl drop-shadow-md"
+>
+  Discover Hotel Liyera in the heart of Sri Lanka, where modern luxury
+  meets the island&apos;s rich heritage.
+</motion.p>
+
   </div>
 </section>
 
