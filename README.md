@@ -2,16 +2,17 @@
 
 This is the updated version of the Hotel Liyera project.  
 
-Originally built over a year ago using **HTML, CSS, and JavaScript**, the project has now been re-developed with modern technologies including:
-Link: https://github.com/chamaneth/Hotel_Liyera
+Originally built over a year ago using **HTML, CSS, and JavaScript**, the project is now being **re-developed** using modern technologies:  
+[GitHub Repository Link](https://github.com/chamaneth/Hotel_Liyera)
 
 - **Next.js** for the frontend and server-side rendering  
 - **Flask** for backend APIs  
 - **MongoDB** for database management  
+- **Tailwind CSS** for rapid and responsive styling  
 
 ## Current Features
 
-- Responsive frontend with Next.js  
+- Responsive frontend built with Next.js and Tailwind CSS  
 - Integration with backend APIs using Flask  
 - Database management using MongoDB  
 - Basic hotel booking and information system  
