@@ -1,4 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Hotel Liyera Update
+
+This is the updated version of the Hotel Liyera project.  
+
+Originally built over a year ago using **HTML, CSS, and JavaScript**, the project is now being **re-developed** using modern technologies:  
+[GitHub Repository Link](https://github.com/chamaneth/Hotel_Liyera)
+
+- **Next.js** for the frontend and server-side rendering  
+- **Flask** for backend APIs  
+- **MongoDB** for database management  
+- **Tailwind CSS** for rapid and responsive styling  
+
+## Current Features
+
+- Responsive frontend built with Next.js and Tailwind CSS  
+- Integration with backend APIs using Flask  
+- Database management using MongoDB  
+- Basic hotel booking and information system  
+
+## Planned Features
+
+- **AI-Integrated Chatbot**: To assist users and answer queries  
+- **Machine Learning Module**: To analyze user preferences and suggest the best options  
+- **Admin Dashboard**: For managing bookings, content, and users  
+- **Data Analytics**: To provide insights on bookings, customer behavior, and performance metrics  
 
 ## Getting Started
 
