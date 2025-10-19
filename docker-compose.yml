@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  frontend:
+    build: .
+    working_dir: /app/frontend
+    ports:
+      - "3000:3000"
+    command: npm run dev
+    depends_on:
+      - backend
+
+  backend:
+    build: .
+    working_dir: /app/backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/hotel_liyera
+    depends_on:
+      - mongo
+    command: python app.py
+
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
