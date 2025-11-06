@@ -22,7 +22,10 @@ Originally built over a year ago using **HTML, CSS, and JavaScript**, the projec
 - **AI-Integrated Chatbot**: To assist users and answer queries  
 - **Machine Learning Module**: To analyze user preferences and suggest the best options  
 - **Admin Dashboard**: For managing bookings, content, and users  
-- **Data Analytics**: To provide insights on bookings, customer behavior, and performance metrics  
+- **Data Analytics**: To provide insights on bookings, customer behavior, and performance metrics
+
+## Why This Project?
+Demonstrates full-stack development + practical thinking about AI/ML integration in real systems.
 
 ## Getting Started
 
@@ -36,3 +39,5 @@ yarn dev
 pnpm dev
 # or
 bun dev
+
+
