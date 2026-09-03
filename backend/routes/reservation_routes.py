@@ -1,27 +1,69 @@
 from flask import Blueprint, request, jsonify
-from models.reservation import Reservation
+from datetime import datetime
+from collections import Counter
 
-reservation_bp = Blueprint("reservation_bp", __name__)
+reservation_bp = Blueprint("reservation", __name__, url_prefix="/api")
 
 def init_reservation_routes(mongo):
-    reservations = mongo.db.reservations
+    reservations_collection = mongo.db.reservations
+    rooms_collection = mongo.db.rooms  # contains all room types
 
-    @reservation_bp.route("/api/reservations", methods=["POST"])
+    @reservation_bp.route("/reservations", methods=["POST"])
     def create_reservation():
         data = request.json
-        required = ["checkin", "checkout", "guests", "roomType"]
+        reservations_collection.insert_one(data)
+        return jsonify({"message": "Reservation submitted!"}), 201
 
-        if not all(key in data for key in required):
-            return jsonify({"error": "Missing fields"}), 400
+    @reservation_bp.route("/check-availability", methods=["POST"])
+    def check_availability():
+        data = request.json
+        checkin = datetime.fromisoformat(data["checkin"])
+        checkout = datetime.fromisoformat(data["checkout"])
+        requested_type = data["roomType"]
+        requested_count = data.get("count", 1)  # default 1 room if not specified
 
-        new_res = Reservation(
-            data["checkin"], data["checkout"], data["guests"], data["roomType"]
-        )
-        reservations.insert_one(new_res.to_dict())
+        # --- Find all rooms of requested type ---
+        rooms = list(rooms_collection.find({"type": requested_type}))
+        available_count = 0
 
-        return jsonify({"message": "Reservation saved successfully!"}), 201
+        for room in rooms:
+            conflict = reservations_collection.find_one({
+                "roomNumber": room["roomNumber"],
+                "checkin": {"$lt": checkout},
+                "checkout": {"$gt": checkin}
+            })
+            if not conflict:
+                available_count += 1
 
-    @reservation_bp.route("/api/reservations", methods=["GET"])
-    def get_reservations():
-        all_res = list(reservations.find({}, {"_id": 0}))
-        return jsonify(all_res)
+        # --- Enough rooms available? ---
+        if available_count >= requested_count:
+            return jsonify({
+                "available": available_count,
+                "roomType": requested_type,
+                "suggestions": []
+            })
+
+        # --- Not enough, suggest alternatives ---
+        remaining_needed = requested_count - available_count
+        other_rooms = list(rooms_collection.find({"type": {"$ne": requested_type}}))
+        type_counts = Counter()
+
+        for room in other_rooms:
+            conflict = reservations_collection.find_one({
+                "roomNumber": room["roomNumber"],
+                "checkin": {"$lt": checkout},
+                "checkout": {"$gt": checkin}
+            })
+            if not conflict and remaining_needed > 0:
+                type_counts[room["type"]] += 1
+                remaining_needed -= 1
+
+        suggestions = [{"roomType": t, "count": c} for t, c in type_counts.items()]
+
+        return jsonify({
+            "available": available_count,
+            "roomType": requested_type,
+            "suggestions": suggestions
+        })
+
+__all__ = ["reservation_bp", "init_reservation_routes"]
