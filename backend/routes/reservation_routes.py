@@ -1,69 +1,79 @@
 from flask import Blueprint, request, jsonify
 from datetime import datetime
-from collections import Counter
+from db import db
 
 reservation_bp = Blueprint("reservation", __name__, url_prefix="/api")
 
-def init_reservation_routes(mongo):
-    reservations_collection = mongo.db.reservations
-    rooms_collection = mongo.db.rooms  # contains all room types
+@reservation_bp.route("/check-availability", methods=["POST"])
+def check_availability():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Missing JSON request body"}), 400
 
-    @reservation_bp.route("/reservations", methods=["POST"])
-    def create_reservation():
-        data = request.json
-        reservations_collection.insert_one(data)
-        return jsonify({"message": "Reservation submitted!"}), 201
+    checkin_raw = data.get("checkin")
+    checkout_raw = data.get("checkout")
+    requested_type = data.get("roomType")
+    requested_count = int(data.get("count", 1))
 
-    @reservation_bp.route("/check-availability", methods=["POST"])
-    def check_availability():
-        data = request.json
-        checkin = datetime.fromisoformat(data["checkin"])
-        checkout = datetime.fromisoformat(data["checkout"])
-        requested_type = data["roomType"]
-        requested_count = data.get("count", 1)  # default 1 room if not specified
+    if not checkin_raw or not checkout_raw or not requested_type:
+        return jsonify({"error": "checkin, checkout, and roomType are required fields"}), 400
 
-        # --- Find all rooms of requested type ---
-        rooms = list(rooms_collection.find({"type": requested_type}))
-        available_count = 0
+    try:
+        checkin_dt = datetime.fromisoformat(checkin_raw)
+        checkout_dt = datetime.fromisoformat(checkout_raw)
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Expected YYYY-MM-DD or ISO 8601 string"}), 400
 
-        for room in rooms:
-            conflict = reservations_collection.find_one({
-                "roomNumber": room["roomNumber"],
-                "checkin": {"$lt": checkout},
-                "checkout": {"$gt": checkin}
-            })
-            if not conflict:
-                available_count += 1
+    if checkout_dt <= checkin_dt:
+        return jsonify({"error": "Check-out date must be after check-in date"}), 400
 
-        # --- Enough rooms available? ---
-        if available_count >= requested_count:
-            return jsonify({
-                "available": available_count,
-                "roomType": requested_type,
-                "suggestions": []
-            })
+    available_rooms, suggestions = db.check_availability(
+        requested_type=requested_type,
+        checkin_dt=checkin_dt,
+        checkout_dt=checkout_dt,
+        count=requested_count
+    )
 
-        # --- Not enough, suggest alternatives ---
-        remaining_needed = requested_count - available_count
-        other_rooms = list(rooms_collection.find({"type": {"$ne": requested_type}}))
-        type_counts = Counter()
+    return jsonify({
+        "available": len(available_rooms),
+        "roomType": requested_type,
+        "roomNumbers": available_rooms,
+        "suggestions": suggestions
+    }), 200
 
-        for room in other_rooms:
-            conflict = reservations_collection.find_one({
-                "roomNumber": room["roomNumber"],
-                "checkin": {"$lt": checkout},
-                "checkout": {"$gt": checkin}
-            })
-            if not conflict and remaining_needed > 0:
-                type_counts[room["type"]] += 1
-                remaining_needed -= 1
+@reservation_bp.route("/reservations", methods=["POST"])
+def create_reservation():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Missing JSON request body"}), 400
 
-        suggestions = [{"roomType": t, "count": c} for t, c in type_counts.items()]
+    required_fields = ["checkin", "checkout", "roomType", "fullName"]
+    missing = [f for f in required_fields if not data.get(f)]
+    if missing:
+        return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
 
-        return jsonify({
-            "available": available_count,
-            "roomType": requested_type,
-            "suggestions": suggestions
-        })
+    try:
+        checkin_dt = datetime.fromisoformat(data["checkin"])
+        checkout_dt = datetime.fromisoformat(data["checkout"])
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Expected YYYY-MM-DD or ISO 8601"}), 400
 
-__all__ = ["reservation_bp", "init_reservation_routes"]
+    if checkout_dt <= checkin_dt:
+        return jsonify({"error": "Check-out date must be after check-in date"}), 400
+
+    reservation = db.create_reservation(data)
+
+    return jsonify({
+        "message": "Reservation confirmed!",
+        "bookingReference": reservation["bookingReference"],
+        "assignedRoom": reservation["roomNumber"],
+        "reservation": reservation
+    }), 201
+
+@reservation_bp.route("/reservations", methods=["GET"])
+def list_reservations():
+    reservations = db.get_all_reservations()
+    return jsonify({
+        "count": len(reservations),
+        "reservations": reservations
+    }), 200

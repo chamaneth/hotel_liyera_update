@@ -16,8 +16,19 @@ export default function ContactPage() {
     message: "",
   });
 
-  const handleSubmit = (e: FormEvent) => {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    try {
+      await fetch(`${API_BASE}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+    } catch {
+      // Graceful offline fallback
+    }
     setSubmitted(true);
   };
 

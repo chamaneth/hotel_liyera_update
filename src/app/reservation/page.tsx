@@ -46,6 +46,8 @@ function ReservationForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+
   const checkAvailability = async () => {
     if (!form.checkin || !form.checkout) {
       setAvailabilityMsg("⚠️ Please select both check-in and check-out dates.");
@@ -54,7 +56,7 @@ function ReservationForm() {
     setLoadingCheck(true);
     setAvailabilityMsg("");
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/check-availability", {
+      const res = await fetch(`${API_BASE}/api/check-availability`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -63,15 +65,15 @@ function ReservationForm() {
       const data = await res.json();
 
       if (data.available > 0) {
-        setAvailabilityMsg(`✅ ${data.available} ${form.roomType} rooms available for selected dates!`);
+        setAvailabilityMsg(`✅ ${data.available} ${form.roomType} room(s) available for selected dates! (Suites: ${data.roomNumbers ? data.roomNumbers.join(", ") : "Available"})`);
         setAvailableRooms(data.roomNumbers || ["Room Assigned"]);
         setSuggestions({});
-      } else if (data.suggestions) {
-        setAvailabilityMsg(`❌ Selected room is unavailable. Alternative options:`);
+      } else if (data.suggestions && Object.keys(data.suggestions).length > 0) {
+        setAvailabilityMsg(`❌ Selected suite is fully booked for these dates. Alternative options available:`);
         setAvailableRooms([]);
         setSuggestions(data.suggestions);
       } else {
-        setAvailabilityMsg("❌ No rooms available for this period.");
+        setAvailabilityMsg("❌ No suites available for this period. Please choose alternate dates.");
         setAvailableRooms([]);
         setSuggestions({});
       }
@@ -89,7 +91,7 @@ function ReservationForm() {
     setMessage("");
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/reservations", {
+      const res = await fetch(`${API_BASE}/api/reservations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -98,7 +100,9 @@ function ReservationForm() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("✅ Reservation confirmed! A confirmation email will be sent shortly.");
+        const refStr = data.bookingReference ? ` Reference: ${data.bookingReference}` : "";
+        const roomStr = data.assignedRoom ? ` (Assigned: Suite ${data.assignedRoom})` : "";
+        setMessage(`✅ Reservation confirmed!${refStr}${roomStr}. Our concierge will email your itinerary.`);
       } else {
         setMessage(`❌ Error: ${data.error || "Could not process reservation."}`);
       }
