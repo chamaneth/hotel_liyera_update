@@ -132,6 +132,11 @@ export default function Footer() {
                   Terms & Conditions
                 </Link>
               </li>
+              <li>
+                <Link href="/admin" className="hover:text-yellow-400 transition text-amber-400/90 font-medium">
+                  Staff & Admin Portal
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -167,7 +172,13 @@ export default function Footer() {
         {/* Bottom copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3">
           <p>© {new Date().getFullYear()} Hotel Liyera. All rights reserved.</p>
-          <p className="text-gray-500">Designed for luxury hospitality excellence.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/admin" className="hover:text-yellow-400 text-gray-400 transition">
+              Staff Console
+            </Link>
+            <span>•</span>
+            <span className="text-gray-500">Designed for luxury hospitality excellence.</span>
+          </div>
         </div>
       </div>
     </footer>

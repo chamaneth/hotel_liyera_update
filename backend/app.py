@@ -15,6 +15,8 @@ from db import db
 from routes.reservation_routes import reservation_bp
 from routes.room_routes import room_bp
 from routes.contact_routes import contact_bp
+from routes.payment_routes import payment_bp
+from routes.admin_routes import admin_bp
 
 def create_app():
     app = Flask(__name__)
@@ -26,19 +28,31 @@ def create_app():
     app.register_blueprint(reservation_bp)
     app.register_blueprint(room_bp)
     app.register_blueprint(contact_bp)
+    app.register_blueprint(payment_bp)
+    app.register_blueprint(admin_bp)
 
     @app.route("/", methods=["GET"])
     def index():
         return jsonify({
             "service": "Hotel Liyera Backend API",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "status": "online",
             "endpoints": [
                 "/api/health",
                 "/api/rooms",
                 "/api/check-availability",
                 "/api/reservations",
-                "/api/contact"
+                "/api/contact",
+                "/api/payments/create-intent",
+                "/api/payments/process-demo",
+                "/api/payments/ipn",
+                "/api/payments/test-cards",
+                "/api/admin/login",
+                "/api/admin/overview",
+                "/api/admin/reservations",
+                "/api/admin/rooms",
+                "/api/admin/payments",
+                "/api/admin/inquiries"
             ]
         }), 200
 
