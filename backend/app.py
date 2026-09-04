@@ -17,6 +17,7 @@ from routes.room_routes import room_bp
 from routes.contact_routes import contact_bp
 from routes.payment_routes import payment_bp
 from routes.admin_routes import admin_bp
+from routes.auth_routes import auth_bp
 
 def create_app():
     app = Flask(__name__)
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(contact_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)
 
     @app.route("/", methods=["GET"])
     def index():

@@ -99,7 +99,16 @@ export default function Navbar() {
         </ul>
 
         {/* Action Button & Mobile Hamburger */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link
+            href="/login"
+            className={`text-xs font-semibold tracking-wider transition ${
+              navScrolled ? "text-gray-700 hover:text-yellow-600" : "text-gray-200 hover:text-yellow-400"
+            }`}
+          >
+            SIGN IN
+          </Link>
+
           <Link
             href="/reservation"
             className="px-4 sm:px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider bg-yellow-400 text-black hover:bg-yellow-500 transition shadow-sm"
@@ -143,6 +152,22 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
+          <div className="pt-4 mt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="text-gray-700 hover:text-yellow-600"
+            >
+              Sign In to Account
+            </Link>
+            <Link
+              href="/signup"
+              onClick={() => setMobileOpen(false)}
+              className="text-yellow-600 hover:underline"
+            >
+              Join Privilege Club →
+            </Link>
+          </div>
         </div>
       )}
     </header>

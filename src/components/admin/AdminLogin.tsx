@@ -134,9 +134,17 @@ export default function AdminLogin({ onLoginSuccess, apiBase }: AdminLoginProps)
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-wider text-slate-400 mb-1">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs uppercase tracking-wider text-slate-400 font-medium">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-amber-400/90 hover:underline transition"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <input
               type="password"
               value={loginPassword}
@@ -155,12 +163,18 @@ export default function AdminLogin({ onLoginSuccess, apiBase }: AdminLoginProps)
           </button>
         </form>
 
-        <div className="text-center mt-6">
+        <div className="flex items-center justify-between mt-6 text-xs text-slate-400">
+          <Link
+            href="/login"
+            className="text-amber-400/80 hover:text-amber-300 transition"
+          >
+            Guest Login Portal →
+          </Link>
           <Link
             href="/"
-            className="text-xs text-amber-400/80 hover:text-amber-300 transition"
+            className="hover:text-white transition"
           >
-            ← Return to Hotel Guest Website
+            ← Guest Home
           </Link>
         </div>
       </motion.div>

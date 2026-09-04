@@ -552,5 +552,168 @@ class DatabaseManager:
             "recentPayments": recent_payments
         }
 
+    # ==================== AUTHENTICATION & USERS ====================
+
+    def _ensure_default_users(self):
+        """Seed default admin and guest member accounts if none exist"""
+        default_accounts = [
+            {
+                "userId": "USR-ADMIN-001",
+                "fullName": "General Manager & Concierge Director",
+                "email": "admin@hotelliyera.com",
+                "password": "hoteladmin2026",
+                "phone": "+1 (800) 555-0199",
+                "role": "Super Admin",
+                "tier": "Executive Staff",
+                "createdAt": datetime.utcnow().isoformat()
+            },
+            {
+                "userId": "USR-GUEST-001",
+                "fullName": "Alexander Vance",
+                "email": "guest@hotelliyera.com",
+                "password": "guest12345",
+                "phone": "+1 555-0199",
+                "role": "Guest Member",
+                "tier": "Privilege Diamond Member",
+                "createdAt": datetime.utcnow().isoformat()
+            }
+        ]
+        users = self.get_all_users()
+        existing_emails = {u.get("email", "").lower() for u in users}
+        for da in default_accounts:
+            if da["email"].lower() not in existing_emails:
+                self.create_user(da)
+
+    def get_all_users(self):
+        if self.using_mongo:
+            try:
+                return list(self.mongo_db.users.find({}, {"_id": 0}))
+            except Exception:
+                pass
+
+        with self.lock:
+            with open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data.get("users", [])
+
+    def find_user_by_email(self, email):
+        if not email:
+            return None
+        users = self.get_all_users()
+        email_clean = email.strip().lower()
+        return next((u for u in users if u.get("email", "").strip().lower() == email_clean), None)
+
+    def create_user(self, payload):
+        user_id = payload.get("userId") or f"USR-{uuid.uuid4().hex[:8].upper()}"
+        record = {
+            "userId": user_id,
+            "fullName": payload.get("fullName", "").strip(),
+            "email": payload.get("email", "").strip().lower(),
+            "password": payload.get("password", ""),
+            "phone": payload.get("phone", "").strip(),
+            "role": payload.get("role", "Guest Member"),
+            "tier": payload.get("tier", "Privilege Member"),
+            "preferredSuite": payload.get("preferredSuite", "Deluxe Oceanview Suite"),
+            "createdAt": datetime.utcnow().isoformat()
+        }
+
+        if self.using_mongo:
+            try:
+                self.mongo_db.users.insert_one(dict(record))
+                record.pop("_id", None)
+                return record
+            except Exception as e:
+                print(f"[WARNING] MongoDB user create failed ({e})")
+
+        with self.lock:
+            with open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            data.setdefault("users", []).append(record)
+            with open(self.data_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
+        return record
+
+    def update_user_password(self, email, new_password):
+        email_clean = email.strip().lower()
+        updated = False
+
+        if self.using_mongo:
+            try:
+                res = self.mongo_db.users.update_one(
+                    {"email": email_clean},
+                    {"$set": {"password": new_password}}
+                )
+                updated = res.modified_count > 0
+            except Exception:
+                pass
+
+        with self.lock:
+            with open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for u in data.setdefault("users", []):
+                if u.get("email", "").strip().lower() == email_clean:
+                    u["password"] = new_password
+                    updated = True
+                    break
+            with open(self.data_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
+        return updated
+
+    def create_password_reset_code(self, email):
+        import random
+        user = self.find_user_by_email(email)
+        if not user:
+            return None
+
+        # 6-digit verification code
+        code = str(random.randint(100000, 999999))
+        token = f"RST-{uuid.uuid4().hex[:12].upper()}"
+
+        record = {
+            "email": email.strip().lower(),
+            "code": code,
+            "token": token,
+            "createdAt": datetime.utcnow().isoformat()
+        }
+
+        with self.lock:
+            with open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            # Remove existing reset requests for this email
+            resets = data.setdefault("passwordResets", [])
+            data["passwordResets"] = [r for r in resets if r.get("email") != email.strip().lower()]
+            data["passwordResets"].append(record)
+            with open(self.data_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
+        return record
+
+    def verify_and_reset_password(self, email, code_or_token, new_password):
+        email_clean = email.strip().lower()
+        matched = False
+
+        with self.lock:
+            with open(self.data_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            resets = data.get("passwordResets", [])
+            valid_request = next(
+                (r for r in resets if r.get("email") == email_clean and (r.get("code") == str(code_or_token).strip() or r.get("token") == str(code_or_token).strip())),
+                None
+            )
+            if valid_request:
+                matched = True
+                # Remove used reset token
+                data["passwordResets"] = [r for r in resets if r.get("email") != email_clean]
+                with open(self.data_file, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2)
+
+        if matched:
+            return self.update_user_password(email_clean, new_password)
+        return False
+
 # Singleton database instance
 db = DatabaseManager()
+db._ensure_default_users()
+
