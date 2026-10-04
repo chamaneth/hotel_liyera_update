@@ -310,7 +310,7 @@ class DatabaseManager:
             "bookingReference": payment_payload.get("bookingReference"),
             "amount": float(payment_payload.get("amount", 0)),
             "currency": payment_payload.get("currency", "USD"),
-            "paymentMethod": payment_payload.get("paymentMethod", "Demo PayHere / Card"),
+            "paymentMethod": payment_payload.get("paymentMethod", "Stripe / Card"),
             "cardLast4": payment_payload.get("cardLast4", "4242"),
             "cardBrand": payment_payload.get("cardBrand", "Visa"),
             "guestName": payment_payload.get("guestName", ""),

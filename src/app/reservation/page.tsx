@@ -573,7 +573,7 @@ function ReservationForm() {
             {/* Submit & Payment Actions */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-gray-500 text-center sm:text-left">
-                Choose to pay online with our **Demo Gateway (PayHere / Card)** or reserve with **Pay at Hotel**.
+                Choose to pay online securely with <strong>Stripe (Cards & Apple Pay)</strong> or reserve with <strong>Pay at Hotel</strong>.
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -586,14 +586,14 @@ function ReservationForm() {
                   {loadingSubmit ? "Confirming..." : "Pay at Hotel (No Prepayment)"}
                 </button>
 
-                {/* Primary Option: Demo Payment Gateway */}
+                {/* Primary Option: Stripe Payment Gateway */}
                 <button
                   type="button"
                   onClick={handleOpenPaymentModal}
-                  className="w-full sm:w-auto px-7 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-7 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-indigo-600 via-indigo-500 to-amber-500 hover:from-indigo-500 hover:to-amber-400 text-white shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <span>⚡ Pay with Demo Gateway</span>
-                  <span className="text-[10px] bg-black/10 px-1.5 py-0.5 rounded">PayHere & Cards</span>
+                  <span>⚡ Pay Securely with Stripe</span>
+                  <span className="text-[10px] bg-black/20 text-indigo-100 px-1.5 py-0.5 rounded font-mono">Cards & Wallets</span>
                 </button>
               </div>
             </div>

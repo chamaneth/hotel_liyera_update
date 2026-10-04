@@ -16,7 +16,7 @@ export default function AdminPaymentsTab({ payments, onRefund }: AdminPaymentsTa
             Payment Gateway Transactions
           </h3>
           <p className="text-xs text-slate-400">
-            Real-time log of simulated PayHere & Card authorizations
+            Real-time log of simulated Stripe & Card authorizations
           </p>
         </div>
         <span className="text-xs text-emerald-400 font-mono bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">

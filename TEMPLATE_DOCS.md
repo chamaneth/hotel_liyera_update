@@ -191,4 +191,6 @@ When upgrading to a live database:
    NEXT_PUBLIC_ENABLE_API_BACKEND=true
    ```
 2. Connect your booking endpoints to your MongoDB, PostgreSQL, or Supabase backend.
-3. Hook in your payment gateway (Stripe, PayPal, PayHere).
+3. Hook in your payment gateway (**Stripe** via `STRIPE_SECRET_KEY` & `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`).
+   - Create PaymentIntents at `/api/payments/create-intent`
+   - Receive webhooks at `/api/payments/stripe-webhook` for instant reservation confirmation.
